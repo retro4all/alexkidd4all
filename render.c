@@ -1,4 +1,4 @@
-#include "minimal.h"
+#include "machinedep/machinedep.h"
 
 #include "shared.h"
 
@@ -254,6 +254,7 @@ void render_reset(void)
     int i;
 
     /* Clear display bitmap */
+    /*
     gp2x_video_RGB_color8(0,0,0,200);
     gp2x_video_RGB_color8(0x00,0x00,0x00,254);
     gp2x_video_RGB_color8(0xFF,0xFF,0xFF,255);
@@ -264,6 +265,17 @@ void render_reset(void)
       memset (gp2x_video_RGB[0].screen8, 200, 320*240);
       gp2x_video_RGB_flip(0);
     }
+    */
+    setPaletteColor(0x00, 0x00, 0x00, 200);
+    setPaletteColor(0x00, 0x00, 0x00, 254);
+    setPaletteColor(0xFF, 0xFF, 0xFF, 255);
+    updatePalette();
+    
+    for (i = 0; i < 4; i++)
+    {
+		memset (screen8, 200, 320*240);
+		videoFlip(0);
+	}
     //memset(bitmap.data, 0, bitmap.pitch * bitmap.height);
 
     /* Clear palette */
@@ -684,11 +696,18 @@ void palette_sync(int index)
 
     //bitmap.pal.dirty[index] = bitmap.pal.update = 1;
 
+	/*
     gp2x_video_RGB_color8(r,g,b,index);
     gp2x_video_RGB_color8(r,g,b,0x20 | index);
     gp2x_video_RGB_color8(r,g,b,0x40 | index);
     gp2x_video_RGB_color8(r,g,b,0x60 | index);
     gp2x_video_RGB_setpalette();
+    */
+    setPaletteColor(r, g, b, index);
+    setPaletteColor(r, g, b, 0x20 | index);
+    setPaletteColor(r, g, b, 0x40 | index);
+    setPaletteColor(r, g, b, 0x60 | index);
+    updatePalette();
 }
 
 void remap_8_to_16(int line)
@@ -703,18 +722,66 @@ void remap_8_to_16(int line)
 
 void remap_8(int line)
 {
-  int i;
-  int ofs = BMP_X_OFFSET;
-  int xofs = bitmap.xofs;
-  int yofs = bitmap.yofs;
+	int i;
+	int ofs = BMP_X_OFFSET;
+	int xofs = bitmap.xofs;
+	int yofs = bitmap.yofs;
+	
+#ifdef PROFILER
+	timerProfile();
+#endif
+	
+	if (bitmap.fullscreen)
+	{
+		if (bitmap.rendermode == RENDER_GG)
+		{
+			if (line < 36 || line > 156) return;
+			
+			unsigned char *p = &bitmap.data[(line - 36) * 2 * bitmap.pitch];
+			unsigned char *p2 = p;
+			
+			for (i = 0; i < BMP_WIDTH; i++)
+			{
+				*p++ = internal_buffer[ofs + i];
+				*p++ = internal_buffer[ofs + i];
+			}			
+			memcpy (p, p2, 320);						
+		}
+		else
+		{			
+			unsigned char *p = &bitmap.data[((line + line / 4) * bitmap.pitch)];
+			//unsigned char *p = &bitmap.data[((line+yofs) * bitmap.pitch)];
+		  
+			for (i = 0; i < BMP_WIDTH; i++)
+			{
+				*p++ = internal_buffer[ofs + i];
 
-  //printf ("Xofs: %d, Yofs: %d\n", bitmap.xofs, bitmap.yofs);
+				if (i % 4 == 0)
+					*p++ = internal_buffer[ofs + i];
+			}
+
+			if ((line + 1) % 4 == 0)
+			{
+				unsigned char * p2 = &bitmap.data[((line + line / 4) * bitmap.pitch)];
+				memcpy (p, p2, 320);
+			}
+		}
+	}
+	else
+	{
+		//printf ("Xofs: %d, Yofs: %d\n", bitmap.xofs, bitmap.yofs);
   
-  unsigned char *p = &bitmap.data[((line+yofs) * bitmap.pitch) + xofs];
+		unsigned char *p = &bitmap.data[((line+yofs) * bitmap.pitch) + xofs];
 
-  //if (bitmap.rendermode == RENDER_GG) CopyScreenGG (p, internal_buffer+ofs);
-  //else CopyScreen (p, internal_buffer+ofs);
-  //if (bitmap.rendermode == RENGER_GG) memcpy (p, internal_buffer+ofs, 160);
-  //else memcpy (p, internal_buffer+ofs, 256);  
-  memcpy (p, internal_buffer+ofs, BMP_WIDTH);
+		//if (bitmap.rendermode == RENDER_GG) CopyScreenGG (p, internal_buffer+ofs);
+		//else CopyScreen (p, internal_buffer+ofs);
+		//if (bitmap.rendermode == RENGER_GG) memcpy (p, internal_buffer+ofs, 160);
+		//else memcpy (p, internal_buffer+ofs, 256);  
+		memcpy (p, internal_buffer+ofs, BMP_WIDTH);
+	}
+	
+#ifdef PROFILER
+	timerProfile();
+#endif	
+	
 }

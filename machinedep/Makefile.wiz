@@ -1,0 +1,63 @@
+
+# Makefile for AlexKidd4ALL
+#
+# Copyright (C) Puck2099
+
+NAME	  = alexkidd4all.gpe
+
+GP2XPATH = /usr/local/wizdev/bin/arm-wiz-linux-
+
+CC = 	$(GP2XPATH)gcc
+CPP =  	$(GP2XPATH)gcc -E
+CXX =  	$(GP2XPATH)g++
+STRIP =	$(GP2XPATH)strip
+LD =  	$(GP2XPATH)ld
+AR =  	$(GP2XPATH)ar
+AS =  	$(GP2XPATH)as
+
+CFLAGS    = -I/usr/local/wizdev/include
+DEFINES   = -DLSB_FIRST -DWIZ -DVARSPEED -DALIGN_DWORD -DUSE_ZLIB -DMMUHACK -DUSEMARQUEES -DVERSION=\"v0.7a3\"
+INCLUDES  = -I. -I.. -I../cpu -I../sound -I../unzip -Iwiz/wiz_lib -Iwiz/asm -Iimg_headers
+LIBS	  = -L/usr/local/wizdev/lib -Wl,-rpath,/usr/local/wizdev/lib -lpthread -lm -lpng -lz
+
+#CFLAGS    += -g
+CFLAGS    += -O3 -fomit-frame-pointer -ffast-math
+
+#CFLAGS += -mcpu=arm926ej-s -mtune=arm926ej-s -fsigned-char \
+	-O3 -msoft-float -ffast-math -fomit-frame-pointer -fstrict-aliasing \
+	-mstructure-size-boundary=32 -fexpensive-optimizations \
+	-fweb -frename-registers -falign-functions=16 -falign-loops -falign-labels -falign-jumps \
+	-finline -finline-functions -fno-common \
+	-Wall -Wno-sign-compare -Wunused -Wpointer-arith -Wcast-align -Waggregate-return -Wshadow -s
+
+#CFLAGS    += 
+#CFLAGS	  += -mcpu=arm920 -mtune=arm920t -O3 -fstrict-aliasing -fexpensive-optimizations -falign-functions -fweb -frename-registers -fomit-frame-pointer -ffast-math -finline -finline-functions -fno-builtin -fno-common -mstructure-size-boundary=8 -msoft-float -Wall
+#CFLAGS	  += -mcpu=arm920 -mtune=arm920t -O3 -fstrict-aliasing -fexpensive-optimizations -falign-functions -fweb -frename-registers -fomit-frame-pointer -ffast-math -finline -finline-functions -fno-builtin -fno-common -mstructure-size-boundary=8 -msoft-float -Wall
+#CFLAGS	  += -mcpu=arm920 -mtune=arm920t -O3 -fstrict-aliasing -fexpensive-optimizations -falign-functions -fweb -frename-registers -ffast-math -finline -finline-functions -fno-builtin -fno-common -mstructure-size-boundary=8 -msoft-float -Wall -pg
+
+#CFLAGS	  += -mcpu=arm920 -mtune=arm920t -std=c99 -O3 -fstrict-aliasing -fexpensive-optimizations -falign-functions -fweb -frename-registers -fomit-frame-pointer -ffast-math -finline -finline-functions -fno-builtin -fno-common -mstructure-size-boundary=8 -msoft-float -pedantic
+
+DEFINES   += -DDEBUG
+#DEFINES	  += -DPROFILER
+
+OBJECTS   = ../cpu/z80.o ../sms.o ../pio.o ../memz80.o ../render.o ../vdp.o ../system.o ../error.o \
+	    ../fileio.o ../state.o ../loadrom.o ../ezxml.o \
+	    ../unzip/ioapi.o ../unzip/unzip.o \
+	    ../sound/sound.o ../sound/sn76489.o ../sound/emu2413.o ../sound/ym2413.o ../sound/fmintf.o ../sound/stream.o \
+	    wiz/main.o config.o menu.o smsrom_good.o wiz/video.o input.o messages.o \
+	    wiz/wiz_lib/wiz_lib.o wiz/wiz_lib/uppermem.o wiz/wiz_lib/pollux_set.o wiz/wiz_lib/sys_cacheflush.o wiz/wiz_lib/warm.o wiz/wiz_lib/minimal_image.o \
+	    wiz/asm/memcpy.o wiz/asm/memset.o wiz/asm/strlen.o wiz/asm/strncmp.o wiz/asm/memcmp.o wiz/asm/strcmp.o  \
+	    wiz/machinedep.o
+
+all: $(NAME)
+
+$(NAME): $(OBJECTS)
+	$(CC) $(LDFLAGS) $(OBJECTS) $(LIBS) -o $@
+	$(STRIP) $(NAME)
+	#cp $(NAME) bin
+
+.c.o:
+	$(CC) -c $(CFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
+
+clean:
+	rm -f $(OBJECTS) $(NAME)
