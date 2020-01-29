@@ -6,6 +6,7 @@
 #include "battery.h"
 
 extern int frames_displayed;
+extern int gp2xmodel;
 int show_fps = 0;
 int frames_showed;
 int frames_acum;
@@ -89,14 +90,16 @@ void gp2x_video_init (void)
     gp2x_video_RGB_setscaling(320,240);
   }
 
-  gp2x_video_cursor_setup (battery3, 16, 1, 255, 255, 255, 15, 0, 0, 0, 0, 0);
-  gp2x_video_cursor_move (294, 5);
-  gp2x_video_cursor_show (1);
-  gp2x_misc_setLED(0);
-  bateria = 100;
+  if (!gp2xmodel) {
+    gp2x_video_cursor_setup (battery3, 16, 1, 255, 255, 255, 15, 0, 0, 0, 0, 0);
+    gp2x_video_cursor_move (294, 5);
+    gp2x_video_cursor_show (1);
+    gp2x_misc_setLED(0);
+    bateria = 100;
 #ifdef DEBUG
-  printf ("Bateria: %d\n", bateria);
+    printf ("Bateria: %d\n", bateria);
 #endif
+  }
 }
 
 void gp2x_video_shutdown(void)
@@ -138,41 +141,43 @@ void gp2x_update_video(void)
   //if (show_battery) gp2x_printf(NULL, 0, 0, "%d", bateria);
 #endif
   
-  if (frames_displayed % 120 == 0) {
-    bateria = battery_level();
-    /*
-      if (sdl_video.frames_rendered < 500) battery_temp = 100;
-      else if (sdl_video.frames_rendered < 1000) battery_temp = 66;
-      else if (sdl_video.frames_rendered < 1500) battery_temp = 33;
-      else if (sdl_video.frames_rendered < 2000) battery_temp = 10;
-      if (bateria >= battery_temp) {
-    */
-    switch (bateria) {
-    case 100:
-      gp2x_video_cursor_setup (battery3, 16, 1, 255, 255, 255, 15, 0, 0, 0, 0, 0);
-      //	if (sdl_video.frames_rendered % 2 == 0) {
-      //if (flashing) flashing = 0;
-      //else flashing = 1;
-      //gp2x_video_cursor_show (flashing);
-      //}
-      break;
-    case 66:
-      gp2x_video_cursor_setup (battery2, 16, 1, 255, 255, 255, 15, 0, 0, 0, 0, 0);
-      break;
-    case 33:
-      gp2x_video_cursor_setup (battery1, 16, 1, 255, 255, 255, 15, 0, 0, 0, 0, 0);
-      break;
-    case 10:
-    case 0:
-      gp2x_video_cursor_setup (battery0, 16, 1, 255, 255, 255, 15, 0, 0, 0, 0, 0);
-      break;
+  if (!gp2xmodel) {
+    if (frames_displayed % 120 == 0) {
+      bateria = battery_level();
+      /*
+	if (sdl_video.frames_rendered < 500) battery_temp = 100;
+	else if (sdl_video.frames_rendered < 1000) battery_temp = 66;
+	else if (sdl_video.frames_rendered < 1500) battery_temp = 33;
+	else if (sdl_video.frames_rendered < 2000) battery_temp = 10;
+	if (bateria >= battery_temp) {
+      */
+      switch (bateria) {
+      case 100:
+	gp2x_video_cursor_setup (battery3, 16, 1, 255, 255, 255, 15, 0, 0, 0, 0, 0);
+	//	if (sdl_video.frames_rendered % 2 == 0) {
+	//if (flashing) flashing = 0;
+	//else flashing = 1;
+	//gp2x_video_cursor_show (flashing);
+	//}
+	break;
+      case 66:
+	gp2x_video_cursor_setup (battery2, 16, 1, 255, 255, 255, 15, 0, 0, 0, 0, 0);
+	break;
+      case 33:
+	gp2x_video_cursor_setup (battery1, 16, 1, 255, 255, 255, 15, 0, 0, 0, 0, 0);
+	break;
+      case 10:
+      case 0:
+	gp2x_video_cursor_setup (battery0, 16, 1, 255, 255, 255, 15, 0, 0, 0, 0, 0);
+	break;
+      }
+      gp2x_video_cursor_move (294, 5);
     }
-    gp2x_video_cursor_move (294, 5);
-  }
-  if (frames_displayed % 60 == 0 && battery_out) {
-    if (flashing) flashing = 0;
-    else flashing = 1;
-    gp2x_video_cursor_show (flashing);
+    if (frames_displayed % 60 == 0 && battery_out) {
+      if (flashing) flashing = 0;
+      else flashing = 1;
+      gp2x_video_cursor_show (flashing);
+    }
   }
   
   gp2x_video_RGB_flip(0);

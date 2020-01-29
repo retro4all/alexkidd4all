@@ -76,15 +76,21 @@ int load_rom(char *filename)
     int romnum = SMS_DAT_LookFor(cart.crc);
     if (romnum > -1) {
       sprintf (cart.game_name, "%s", SMS_DAT_getname(romnum));
+#ifdef DEBUG
       printf ("ROM found on database\n");
       printf ("%s\n", cart.game_name);
+#endif
     }
     else {
       sprintf (cart.game_name, "%s", game_name);
       strcpy(strrchr(cart.game_name, '.'), "\0\0\0\0");
+#ifdef DEBUG
       printf ("ROM not found on database\n");
+#endif
     }
+#ifdef DEBUG
     printf ("Game CRC: %x\n", cart.crc);
+#endif
 
     /* Assign default settings (US NTSC machine) */
     cart.mapper     = MAPPER_SEGA;
@@ -110,12 +116,16 @@ int load_rom(char *filename)
 
     if (romnum > -1) {
       if (SMS_DAT_getsms_gg(romnum)) {
+#ifdef DEBUG
 	printf ("GG Compatibility mode\n");
+#endif
 	add_msg(M_SMSGG);
 	sms.console = CONSOLE_SMS;
       }
       if (!SMS_DAT_getuse_fm(romnum)) {
+#ifdef DEBUG
 	printf ("No FM supported\n");
+#endif
 	option.fm_enable = 0;
       }
     }

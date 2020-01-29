@@ -133,8 +133,13 @@ uint8 smsj_port_r(uint16 port)
 {
     port &= 0xFF;
 
-    if(port == 0xF2 && !(sms.memctrl & 4))
-        return fmunit_detect_r();
+    //if(port == 0xF2 && !(sms.memctrl & 4))
+    //    return fmunit_detect_r();
+
+    if(port == 0xF2) {
+      //if (!(sms.memctrl & 4))
+	return fmunit_detect_r();
+    }
 
     switch(port & 0xC0)
     {

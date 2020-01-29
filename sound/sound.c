@@ -165,7 +165,7 @@ void sound_update(int line)
       
       /* Generate YM2413 sample data */
       if (use_fm) FM_Update(fm, snd.sample_count - snd.done_so_far);
-      
+
       /* Reset */
       snd.done_so_far = 0;
     }
@@ -190,6 +190,7 @@ void sound_update(int line)
       if (use_fm) FM_Update(fm, tinybit);
 
       /* Sum total */
+
       snd.done_so_far += tinybit;
     }
 }
@@ -252,7 +253,7 @@ int fmunit_detect_r(void)
 
 void fmunit_detect_w(int data)
 {
-    sms.fm_detect = data;
+  sms.fm_detect = data;
 }
 
 void fmunit_write(int offset, int data)

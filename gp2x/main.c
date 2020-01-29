@@ -11,13 +11,15 @@
 /* Display timing data */
 int frames_rendered = 0;
 int frames_displayed = 0;
-int running                  = 1;
-int state_slot               = 0;
+int running = 1;
+int state_slot = 0;
 
 /* Options structure */
 t_option option;
 
 int volume = 100;
+int tweak = 0;
+int gp2xmodel = 0; // 0 = F100, 1 = F200
 
 struct usbjoy * joys [4];
 
@@ -60,12 +62,26 @@ int main (int argc, char **argv)
   int i;
   int commandline = 0;
   int exit = 0;
+  int fdtouch;
 
   printf("AlexKidd2X %s\n", VERSION);
   printf("(C) Israel Lopez Fernandez (Puck2099)\n");
   printf("Based on SMS Plus (C) Charles Mac Donald\n\n");
 
   gp2x_init(1000, 8, 44100,16,1,60, 1);
+
+  /* Sets GP2X Model */
+  fdtouch = open("/dev/touchscreen/wm97xx", O_RDONLY | O_NOCTTY);	
+  if (fdtouch != -1) { gp2xmodel = 1; volume = 50; close(fdtouch); }
+
+  /* Looks for file to tweak the RAM */
+  FILE *fp;
+  fp = fopen ("notweak", "r");
+  if (fp != NULL) {
+    tweak = 0;
+    fclose(fp);
+  }
+  else tweak = 1;
 
   /* Draws logo screen */
   drawSprite (splash, 0, 0, 0, 0, 320, 240, 320, 240);
@@ -109,10 +125,14 @@ int main (int argc, char **argv)
   if (exit) goto exitemu;
   
   /* Attempt to load game off commandline */
+#ifdef DEBUG
   printf ("Rom name: %s\n", cart.file_name);
+#endif
   if(load_rom(cart.file_name) == 0)
     {
+#ifdef DEBUG
       printf("Error loading `%s'.\n", cart.file_name);
+#endif
       if (commandline) goto exitemu;
       else goto menu;
     }
@@ -124,14 +144,23 @@ int main (int argc, char **argv)
       sms.territory = TERRITORY_EXPORT;
     }
   
-  printf("GP2X Speed: %d Mhz\n", option.speed);   
+#ifdef DEBUG
+  printf("GP2X Speed: %d Mhz\n", option.speed);  
+  if (tweak) printf ("RAM Tweaked\n");
+  else printf ("RAM NOT Tweaked\n");
+#endif
+  if (tweak) TweakRam();
   SetGP2XClock(option.speed);
   
   /* Squidge's MMU Hack */
   if (hack_the_mmu()==0) {
+#ifdef DEBUG
     printf("Patching MMU ... OK!\n");
+#endif
   } else {
+#ifdef DEBUG
     printf("Patching MMU ... FAILED :(\n");
+#endif
   }  
     
   /* Set up video, audio, input, etc. */
@@ -141,7 +170,9 @@ int main (int argc, char **argv)
   snd.fm_clock = (sms.display == DISPLAY_NTSC) ? CLOCK_NTSC : CLOCK_PAL;
   snd.psg_clock = (sms.display == DISPLAY_NTSC) ? CLOCK_NTSC : CLOCK_PAL;
   snd.sample_rate = option.sndrate;
+#ifdef DEBUG
   printf ("Sound FPS: %d\n", snd.fps);
+#endif
 
   osd_init();
 
@@ -150,10 +181,12 @@ int main (int argc, char **argv)
   sms.use_fm = option.fm_enable;
   system_init();
   
+#ifdef DEBUG
   if (sms.territory) printf ("Territory Export\n");
   else printf ("Territory Domestic\n");
   if (sms.display) printf ("Display PAL\n");
   else printf ("Display NTSC\n");
+#endif
 
   system_poweron();
   
@@ -174,8 +207,10 @@ int main (int argc, char **argv)
   int done=0, aim=0;
   short *soundbuffer;
 
+#ifdef DEBUG
   printf ("Samples por frame: %d\n", snd.sample_count);
   printf ("FM Activado: %d\n", sms.use_fm);
+#endif
 
   running = 1;
   /* Main emulation loop */
@@ -196,19 +231,29 @@ int main (int argc, char **argv)
 
 	  running = gp2x_update_inputs();
 	  sound_mixer (soundbuffer, snd.sample_count);
+	  // Aqui ira el Action Replay
+	  //sms.wram[0x25] = 3;
+	  //sms.wram[0x30] = 90;
 	  frames_rendered++;
 	}
 	if (done == aim) break;
       }
       done = aim;
-
-      if (commandline) if (gp2x_timer_read()-ticks_starting > 60000) running = 0; // Debugging
+      /*
+      if (commandline) if (gp2x_timer_read()-ticks_starting > 60000) {
+	  printf ("Memoria:\n");
+	  for (i=0; i<0x2000; i++) printf ("%d->%d, ", i, sms.wram[i]);
+	  running = 0;
+	}
+      */
+      //if (commandline) if (gp2x_timer_read()-ticks_starting > 60000) running = 0; // Debugging
     }
 
   system_poweroff();
   system_shutdown();
   osd_shutdown();
 
+#ifdef DEBUG
   float playtime = (float)(gp2x_timer_read() - ticks_starting) / (float)1000;
   float avgfps = (float)frames_rendered / playtime;
   float avgfpsd = (float)frames_displayed / playtime;
@@ -221,15 +266,13 @@ int main (int argc, char **argv)
   printf("[INFO] Average FPS rendered = %.2f (%d%%).\n", avgfps, (int)(avgfps * 100 / 60)); 
   printf("[INFO] Average FPS displayed = %.2f (%d%%).\n", avgfpsd, (int)(avgfpsd * 100 / 60)); 
   printf("[INFO] Play time = %.2f sec.\n\n", playtime);
+#endif
 
   if (!commandline) goto menu;
 
  exitemu:
   if (!commandline) {
     printf ("Exiting...\n");
-    //sync();
-    //chdir("/usr/gp2x");
-    //execl("/usr/gp2x/gp2xmenu", "/usr/gp2x/gp2xmenu", NULL);
   }
   
   return 0;

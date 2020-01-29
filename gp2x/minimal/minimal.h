@@ -97,6 +97,8 @@ extern void           gp2x_init(int, int, int, int, int, int, int);
 extern void           gp2x_deinit(void);
 
 extern void           SetGP2XClock(int mhz);
+extern void           TweakRam();
+extern void           UnTweakRam();
 extern void 	      gp2x_misc_setLED(int on);
 extern int 	      batterycharge(void);
 

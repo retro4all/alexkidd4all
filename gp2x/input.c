@@ -6,6 +6,7 @@ extern int volume;
 extern int show_fps;
 extern int show_battery;
 extern int battery_out;
+extern int gp2xmodel;
 
 unsigned long pad = 0;
 unsigned long last_key = 0;
@@ -56,7 +57,7 @@ int gp2x_update_inputs(void)
 
   if (pad & GP2X_L) if (pad & GP2X_R) running = 0;  
 
-  if (pad & GP2X_PUSH) if (pad & GP2X_L) if (pad != last_key) {
+  if ((pad & GP2X_PUSH) || (pad & GP2X_SELECT)) if (pad & GP2X_L) if (pad != last_key) {
     if (save_state()) add_msg(M_SAVE_SLOT_G);
     else add_msg(M_SAVE_SLOT_B);
 #ifdef DEBUG
@@ -64,7 +65,7 @@ int gp2x_update_inputs(void)
 #endif
   }
   
-  if (pad & GP2X_PUSH) if (pad & GP2X_R) if (pad != last_key) {
+  if ((pad & GP2X_PUSH) || (pad & GP2X_SELECT)) if (pad & GP2X_R) if (pad != last_key) {
     if (load_state()) add_msg(M_LOAD_SLOT_G);
     else add_msg(M_LOAD_SLOT_B);
 #ifdef DEBUG
@@ -72,7 +73,7 @@ int gp2x_update_inputs(void)
 #endif
   }
 
-  if (pad & GP2X_PUSH) if (pad & GP2X_VOL_DOWN) if (pad != last_key) {
+  if ((pad & GP2X_PUSH) || (pad & GP2X_SELECT)) if (pad & GP2X_VOL_DOWN) if (pad != last_key) {
     state_slot = (state_slot == 0) ? 9 : state_slot-1;
     add_msg(M_CHANGE_SLOT);
 #ifdef DEBUG
@@ -80,7 +81,7 @@ int gp2x_update_inputs(void)
 #endif
   }
 
-  if (pad & GP2X_PUSH) if (pad & GP2X_VOL_UP) if (pad != last_key) {
+  if ((pad & GP2X_PUSH) || (pad & GP2X_SELECT)) if (pad & GP2X_VOL_UP) if (pad != last_key) {
     state_slot = (state_slot + 1) % 10;
     add_msg(M_CHANGE_SLOT);
 #ifdef DEBUG
@@ -88,22 +89,22 @@ int gp2x_update_inputs(void)
 #endif
   }
 
-  if (pad & GP2X_PUSH) if (pad & GP2X_Y) if (pad != last_key) {
+  if ((pad & GP2X_PUSH) || (pad & GP2X_SELECT)) if (pad & GP2X_Y) if (pad != last_key) {
     if (!show_fps) show_fps = 1;
     else show_fps = 0;
   }
   
-  if (pad & GP2X_PUSH) if (pad & GP2X_X) if (pad != last_key) if (!battery_out) {
+  if ((pad & GP2X_PUSH) || (pad & GP2X_SELECT)) if (pad & GP2X_X) if (pad != last_key) if (!battery_out) {
     if (!show_battery) show_battery = 1;
     else show_battery = 0;
-    gp2x_video_cursor_show (show_battery);
+    if (!gp2xmodel) gp2x_video_cursor_show (show_battery);
   }
   
-  if ((pad & GP2X_VOL_UP) && !(pad & GP2X_PUSH) && volume < 100) {
+  if ((pad & GP2X_VOL_UP) && !((pad & GP2X_PUSH) || (pad & GP2X_SELECT)) && volume < 100) {
     volume ++;
     gp2x_sound_volume (volume, volume);
   }
-  if ((pad & GP2X_VOL_DOWN) && !(pad & GP2X_PUSH) && volume > 0) {
+  if ((pad & GP2X_VOL_DOWN) && !((pad & GP2X_PUSH) || (pad & GP2X_SELECT)) && volume > 0) {
     volume --;
     gp2x_sound_volume (volume, volume);
   }

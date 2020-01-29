@@ -161,6 +161,8 @@ static volatile unsigned long  *gp2x_memregl, gp2x_sound_pausei, gp2x_exit;
 volatile short *pOutput[8]; // DrMD
 volatile int CurrentSoundBank=0; // DrMD
 
+int tr1=0; int tr2=0; int tr3=0; // Tweak RAM backup values
+
 /*
    ,--------------------.
    |                    |X
@@ -2041,7 +2043,9 @@ void gp2x_sound_init (int rate, int bits, int stereo, int Hz)
   ioctl(gp2x_dev[3], SNDCTL_DSP_SETFMT, &bits);
   ioctl(gp2x_dev[3], SNDCTL_DSP_STEREO, &stereo);
 
+#ifdef DEBUG
   printf ("Opening audio: Rate: %d, Bits: %d, Stereo: %d, Hz: %d\n", rate, bits, stereo, Hz);
+#endif
 
   audio_buf_info abi;
   //int frag = (0x80000|6)+(rate>8250)+(rate>16500)+(rate>33000)+(stereo==1)+(bits==16);
@@ -2058,10 +2062,12 @@ void gp2x_sound_init (int rate, int bits, int stereo, int Hz)
   gp2x_sound_buffer[2]=(1000000000/Hz)&0xFFFF;
   gp2x_sound_buffer[3]=(1000000000/Hz)>>16;
 
+#ifdef DEBUG
   printf ("gp2x_sound_buffer[0]: %d\n", gp2x_sound_buffer[0]);
   printf ("gp2x_sound_buffer[1]: %d\n", gp2x_sound_buffer[1]);
   printf ("gp2x_sound_buffer[2]: %d\n", gp2x_sound_buffer[2]);
   printf ("gp2x_sound_buffer[3]: %d\n", gp2x_sound_buffer[3]);
+#endif
   
   bufferStart= &gp2x_sound_buffer[4];
   pOutput[0] = (short*)bufferStart+(0*gp2x_sound_buffer[1]);
@@ -2278,6 +2284,13 @@ void gp2x_deinit(void)
 
   gp2x_init(1000, 16, 44100,16,1,60, 1);
 
+  if (tr1+tr2+tr3 != 0) {
+    UnTweakRam();
+#ifdef DEBUG
+    printf ("Untweaking the RAM...\n");
+#endif
+  }
+
   while((gp2x_exit++)<1000000);
 
   gp2x_save_registers(2); 
@@ -2318,6 +2331,34 @@ void gp2x_deinit(void)
   chdir("/usr/gp2x");
   execl("gp2xmenu","gp2xmenu",NULL);
 #endif
+}
+
+void TweakRam()
+{
+  int tMRD = 0, tRFC = 0, tRP = 1, tRCD = 1;
+  int LAT = 0, tRC = 6, tRAS = 3, tWR = 0;
+  int REFPERD = 459;
+
+  tr1 = gp2x_memregs[0x3802>>1];
+  tr2 = gp2x_memregs[0x3804>>1];
+  tr3 = gp2x_memregs[0x3808>>1];
+
+#ifdef DEBUG
+  printf ("TR1: %d\n", tr1);
+  printf ("TR2: %d\n", tr2);
+  printf ("TR3: %d\n", tr3);
+#endif
+  
+  gp2x_memregs[0x3802>>1] = (tMRD << 12) | (tRFC << 8) | (tRP << 4) | tRCD;
+  gp2x_memregs[0x3804>>1] = (gp2x_memregs[0x3804>>1] & 0xE000) | (LAT << 12) | (tRC << 8) | (tRAS << 4) | tWR;
+  gp2x_memregs[0x3808>>1] = REFPERD;
+}
+
+void UnTweakRam()
+{
+  gp2x_memregs[0x3802>>1] = tr1;
+  gp2x_memregs[0x3804>>1] = tr2;
+  gp2x_memregs[0x3808>>1] = tr3;
 }
 
 void SetGP2XClock(int mhz)

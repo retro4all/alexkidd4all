@@ -4,6 +4,7 @@
 
 /* Options structure */
 extern t_option option;
+extern int tweak;
 
 void do_config(int argc, char **argv)
 {
@@ -89,7 +90,7 @@ void parse_args(int argc, char **argv)
 	option.fullscreen = 1;
       }
 
-      else if (strcasecmp(argv[i], "-jp") == 0)
+      else if (strcasecmp(argv[i], "--jp") == 0)
 	{
 	  option.territory = TERRITORY_DOMESTIC;
         }
@@ -100,9 +101,14 @@ void parse_args(int argc, char **argv)
 	}
       }
 
-      else if (strcasecmp(argv[i], "-codies") == 0)
+      else if (strcasecmp(argv[i], "--codies") == 0)
         {
 	  option.codies = 1;
+        }
+
+      else if (strcasecmp(argv[i], "--tweak") == 0)
+        {
+	  tweak = 1;
         }
     }
 }

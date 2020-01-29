@@ -111,7 +111,9 @@ void system_init(void)
     sms.save = 0;
     big_cycles = bitmap.z80speedmod*227;
     small_cycles = bitmap.z80speedmod*16;
+#ifdef DEBUG
     printf ("Cycles: %d - %d\n", big_cycles, small_cycles);
+#endif
 }
 
 void system_shutdown(void)

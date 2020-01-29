@@ -536,7 +536,7 @@ char * select_marquee (char * back, char * font) {
       gp2x_video_YUV_setscaling(0,320,240);
   
       gp2x_loadPNG(path, &gp2ximage, 32, 1);
-      memset(gp2x_video_RGB[0].screen8, 2, 320*240);
+      memset(gp2x_video_RGB[0].screen8, 1, 320*240);
       gp2x_video_RGB_flip(0);
       memcpy (gp2x_video_YUV[0].screen32, gp2ximage.data, 320*240*4);
       gp2x_video_YUV_flip(0);
@@ -689,7 +689,7 @@ void generate_crc (troms ** roms, int * nroms) {
 
     drawTransSprite (bar, 0, 0, 44, 225, 232, 8, 232, 8, 0);
     //drawRect (46, 227, 60, 230, 180);
-    drawRect (46, 227, (int)(46+(float)i*incr), 230, 180);
+    drawRect (46, 227, (int)(46+(float)i*incr), 230, 251);
 
     gp2x_video_RGB_flip(0);
     gp2x_timer_delay(50);
@@ -741,7 +741,9 @@ int menu (void)
   gp2x_video_RGB_flip(0);
   setPalette (back_pal);
 
+#ifdef DEBUG
   printf ("\nSearching ROMs...\n");
+#endif
 
   chdir (current_path);
 
@@ -767,7 +769,9 @@ int menu (void)
     fread(roms, size, 1, fp);
     fclose(fp);
     nroms = size/sizeof(troms);
+#ifdef DEBUG
     printf ("Loading CRC - %d Elements - %d bytes\n", nroms, size);
+#endif
   }
   else {
 
@@ -936,11 +940,11 @@ int menu (void)
       romindex = 0;
     }
     // Deletes current rom
-    if (pad & GP2X_PUSH) if ((pad != last_key) && (pad & GP2X_X)) {
+    if ((pad & GP2X_PUSH) || (pad & GP2X_A)) if ((pad != last_key) && (pad & GP2X_X)) {
       delete_rom (romy+romindex, &roms, &nroms);
     }
     // Saves default rom path
-    if (pad & GP2X_PUSH) if ((pad != last_key) && (pad & GP2X_Y)) {
+    if ((pad & GP2X_PUSH) || (pad & GP2X_A)) if ((pad != last_key) && (pad & GP2X_Y)) {
       for (ii=0; ii<256; ii++) temp_array[ii] = 0;
       sprintf(temp_array, "%s/alexkidd2x.cfg", exe_path);
 #ifdef DEBUG
@@ -992,20 +996,28 @@ int menu (void)
   for (i=0; i<256; i++) path[i] = 0;
   sprintf (path, "%s/%s", current_path, sel_rom);
   int crc = get_crc (path);
+#ifdef DEBUG
   printf ("Rom seleccionada: %s - CRC: %x\n", sel_rom, crc);
   printf ("Current path: %s\n", current_path);
+#endif
   int romnum = SMS_DAT_LookFor(crc);
   if (romnum > -1) {
     sprintf (cart.game_name, "%s", SMS_DAT_getname(romnum));
     //printf ("%s\n", SMS_DAT_getname(romnum));
+#ifdef DEBUG
     printf ("ROM found on database\n");
+#endif
   }
   else {
     sprintf (cart.game_name, "%s", sel_rom);
     strcpy(strrchr(cart.game_name, '.'), "\0\0\0\0");
+#ifdef DEBUG
     printf ("ROM not found on database\n");
+#endif
   }
+#ifdef DEBUG
   printf ("ROM Name: %s\n", cart.game_name);
+#endif
 
   for (i=0; i<256; i++) path[i] = 0;
   sprintf(path, "data/%s.cfg", cart.game_name);  
@@ -1185,7 +1197,7 @@ int menu (void)
       // Limit joystick push event
       if (!joy_getbutton(0, joys[0])) joypause1 = 0;
       if (!joy_getbutton(1, joys[0])) joypause2 = 0;
-      if (pad & GP2X_PUSH) if (pad & GP2X_Y) {
+      if ((pad & GP2X_PUSH) || (pad & GP2X_A)) if (pad & GP2X_Y) {
 	memcpy (&default_config, &option, sizeof(t_option));
 	fp = fopen ("data/default.cfg", "w");
 	fwrite(&default_config, sizeof(t_option), 1, fp);

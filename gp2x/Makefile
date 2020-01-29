@@ -16,7 +16,7 @@ AR =  	$(GP2XPATH)ar
 AS =  	$(GP2XPATH)as
 
 CFLAGS    = -I/usr/local/gp2xdev/include
-DEFINES   = -DLSB_FIRST -DGP2X -DALIGN_DWORD -DUSE_ZLIB -DVERSION=\"v0.5\"
+DEFINES   = -DLSB_FIRST -DGP2X -DALIGN_DWORD -DUSE_ZLIB -DVERSION=\"v0.6\"
 INCLUDES  = -I. -I.. -I../cpu -I../sound -I../unzip -Iminimal -Iasm -Iimg_headers
 LIBS	  = -L/usr/local/gp2xdev/lib -Wl,-rpath,/usr/local/gp2xdev/lib -lpthread -lm -lpng -lz -static
 
@@ -45,6 +45,7 @@ all: $(NAME)
 $(NAME): $(OBJECTS)
 	$(CC) $(LDFLAGS) $(OBJECTS) $(LIBS) -o $@
 	$(STRIP) $(NAME)
+	cp $(NAME) bin
 
 .c.o:
 	$(CC) -c $(CFLAGS) $(INCLUDES) $(DEFINES) $< -o $@

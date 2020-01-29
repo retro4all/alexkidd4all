@@ -79,7 +79,9 @@ struct usbjoy * joy_open (int joynumber) {
       for (i=0; i<2; i++) joy->stateaxes[i] = 0;
     }
     else {
+#ifdef DEBUG
       printf ("ERROR: No Joystick found\n");
+#endif
     }
   }
   return joy;
