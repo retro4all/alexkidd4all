@@ -1,0 +1,81 @@
+#ifndef __MACHINEDEP_H__
+#define __MACHINEDEP_H__	
+
+#define BIT(number) (1<<(number))
+enum {
+	MACH_B1 	= BIT(1),
+	MACH_B2 	= BIT(2),
+	MACH_B3 	= BIT(3),
+	MACH_B4 	= BIT(4),
+	MACH_B5 	= BIT(5),
+	MACH_B6 	= BIT(6),
+	MACH_START 	= BIT(7),
+	MACH_SELECT = BIT(8),
+	MACH_LEFT 	= BIT(9),
+	MACH_RIGHT 	= BIT(10),
+	MACH_UP 	= BIT(11),
+	MACH_DOWN 	= BIT(12),
+	MACH_VOLUP 	= BIT(13),
+	MACH_VOLDOWN= BIT(14),
+	MACH_EXIT	= BIT(15),
+	MACH_SAVE	= BIT(16),
+	MACH_LOAD	= BIT(17),
+	MACH_SLOTD	= BIT(18),
+	MACH_SLOTU	= BIT(19),
+	MACH_SHOWFPS= BIT(20),
+	MACH_BATTERY= BIT(21)
+};
+
+typedef struct 
+{
+	//struct usbjoy * joy;
+	int joytype;
+	int maps[7];
+} t_input;
+
+unsigned char * screen8;
+unsigned short * screen16;
+
+char * audiobuffer;
+
+int audioLen;
+int audioBufferSize;
+
+extern volatile int CurrentSoundBank;
+extern volatile short *pOutput[];
+
+void machineInit (int bpp, int rate, int bits, int stereo);
+
+void machineDeInit (void);
+
+void setMachineClock (int speed);
+
+void setPaletteColor (char r, char g, char b, unsigned char index);
+
+void setPalette (char palette[256][3]);
+
+void updatePalette (void);
+
+void drawSprite(char* image, int srcX, int srcY, int dstX, int dstY, int width, int height, int imgw, int imgh );
+
+void drawTransSprite (char* image, int srcX, int srcY, int dstX, int dstY, int width, int height, int imgw, int imgh, char trans);
+
+void drawText (char * image, int x, int y, char * texto, int center);
+
+void videoFlip (int layer);
+
+unsigned long joyRead (int joystick);
+
+void timerDelay (unsigned long delay);
+
+unsigned long timerRead (void);
+
+void timerProfile (void);
+
+void soundInit (int rate, int bits, int stereo, int Hz);
+
+void soundVolume (int left, int right);
+
+void soundPause (int pause);
+
+#endif /* __MACHINEDEP_H__ */

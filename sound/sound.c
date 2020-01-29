@@ -83,7 +83,7 @@ int sound_init(void)
   /* Inform other functions that we can use sound */
   snd.enabled = 1;
   
-  gp2x_sound_pause(0);
+  soundPause(0);
   
   /* Restore YM2413 register settings */
   if(restore_fm)

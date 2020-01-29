@@ -82,6 +82,7 @@ typedef struct
   int xofs;
   int yofs;
   int rendermode;
+  int fullscreen;
   float z80speedmod;
   struct {
     int x, y, w, h;
