@@ -1,6 +1,8 @@
 #ifndef __MACHINEDEP_H__
 #define __MACHINEDEP_H__	
 
+#define TRANS 242
+
 #define BIT(number) (1<<(number))
 enum {
 	MACH_B1 	= BIT(1),
@@ -33,8 +35,15 @@ typedef struct
 	int maps[7];
 } t_input;
 
+typedef struct
+{ 
+	int x,y,w,h; 
+	void *data; 
+} t_img_rect;
+
 unsigned char * screen8;
-unsigned short * screen16;
+unsigned char * back8;
+//unsigned short * screen16;
 
 char * audiobuffer;
 
@@ -50,6 +59,8 @@ void machineDeInit (void);
 
 void setMachineClock (int speed);
 
+void setBackLayer (int enabled, int bpp);
+
 void setPaletteColor (char r, char g, char b, unsigned char index);
 
 void setPalette (char palette[256][3]);
@@ -62,6 +73,8 @@ void drawTransSprite (char* image, int srcX, int srcY, int dstX, int dstY, int w
 
 void drawText (char * image, int x, int y, char * texto, int center);
 
+void loadPNG (char filename[], t_img_rect * image, int bitdepth, int solid);
+
 void videoFlip (int layer);
 
 unsigned long joyRead (int joystick);
@@ -73,6 +86,8 @@ unsigned long timerRead (void);
 void timerProfile (void);
 
 void soundInit (int rate, int bits, int stereo, int Hz);
+
+void soundDeInit (void);
 
 void soundVolume (int left, int right);
 

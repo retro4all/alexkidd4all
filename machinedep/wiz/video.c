@@ -1,4 +1,5 @@
 #include "machinedep.h"
+//#include "minimal_image.h"
 
 #include "osd.h"
 
@@ -24,12 +25,25 @@ void videoInit (void)
 	screen_width  = (IS_GG) ? GG_SCREEN_WIDTH  : SMS_SCREEN_WIDTH;
 	screen_height = (IS_GG) ? GG_SCREEN_HEIGHT : SMS_SCREEN_HEIGHT;
 
-	/*
-	gp2x_rect gp2ximage;
-
 	use_marquee = strcmp (option.marquee, "marquees/!none.png");
+	
+#ifdef DEBUG
+	printf("Marquee: %s\n", option.marquee);
+#endif
 
 
+	if (!option.fullscreen && use_marquee)
+	{	
+		setBackLayer(1, 16);
+		t_img_rect image;
+		loadPNG(option.marquee, &image, 16, 1);
+		memcpy (back8, image.data, 320*240*2);
+		videoFlip(1);
+		memcpy (back8, image.data, 320*240*2);
+		videoFlip(1);    
+	}
+
+	/*
 	if (!option.fullscreen && use_marquee)
 	{
 		gp2x_video_RGB_setcolorkey(0, 0, 0);
@@ -67,6 +81,7 @@ void videoInit (void)
 		gp2x_video_YUV_flip(0);
 	}
 	*/
+	
 
 	if (option.fullscreen)
 	{
@@ -101,6 +116,10 @@ void videoShutdown(void)
 	gp2x_video_YUV_setparts(-1, -1, -1, -1, 319, 239);
 	gp2x_video_cursor_show (0);
 	*/
+	memset (back8, 0, 320 * 240 * 2);
+	videoFlip(1);
+	
+	setBackLayer(0, 0);
 }
 
 /* Update video */

@@ -110,6 +110,14 @@ void parse_args(int argc, char **argv)
 		{
 			option.codies = 1;
 		}
+		
+		else if (strcasecmp(argv[i], "--marquee") == 0)
+		{
+			if (++i < argc)
+			{
+				sprintf (option.marquee, argv[i]);
+			}
+		}		
 
 #ifdef GP2X
 		else if (strcasecmp(argv[i], "--tweak") == 0)

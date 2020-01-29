@@ -314,8 +314,14 @@ static void lc_setstride(int layer, int hs, int vs)
 	lc_dirtylayer(layer);
 }
 
-int wiz_enable_back_layer(int bpp)
+int wiz_enable_back_layer(int enabled, int bpp)
 {
+	if (!enabled)
+	{
+		lc_setlayer(1, 0, 0, 0, 0, RGB565);
+		return 1;
+	}
+	
 	if (bpp==16)
 	{
 	    lc_setlayer(1, 1, 0, 0, 0, RGB565);

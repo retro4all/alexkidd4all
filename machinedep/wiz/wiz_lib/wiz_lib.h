@@ -31,7 +31,7 @@ extern unsigned int * fb1_32bit;
 
 extern int wiz_init(int bpp, int rate, int bits, int stereo);
 extern void wiz_deinit(void);
-extern int wiz_enable_back_layer(int bpp);
+extern int wiz_enable_back_layer(int enabled, int bpp);
 
 #define BIT(number) (1<<(number))
 enum {

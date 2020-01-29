@@ -4,7 +4,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-//#include "minimal.h"
+
+#include "machinedep.h"
 
 #include <string.h>
 #include <stdarg.h>
@@ -28,11 +29,13 @@
  *
  */
 
+/*
 typedef struct gp2x_rect
 { 
 	int x,y,w,h; 
 	void *data; 
 } gp2x_rect;
+*/
 
 typedef struct tagBitmapInfo
 {
@@ -68,7 +71,7 @@ typedef struct tagBitmapHeader
 	unsigned short int morebollox;  //More bollox
 } BitmapHeader;
 
-extern int gp2x_loadPNG(char filename[], gp2x_rect *gp2ximage, int bitdepth, int solid);
+extern int gp2x_loadPNG(char filename[], t_img_rect *gp2ximage, int bitdepth, int solid);
 extern unsigned short gp2x_video_RGB_color15(int, int, int, int);
 extern unsigned short gp2x_video_RGB_color16(int, int, int);
 extern unsigned long  gp2x_video_YUV_color(int, int, int);

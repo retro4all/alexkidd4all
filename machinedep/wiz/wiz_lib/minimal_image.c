@@ -94,7 +94,7 @@ unsigned long gp2x_video_YUV_color(int R, int G, int B)
    return (V | Y | U | (Y>>16));
 }
 
-int gp2x_loadPNG(char filename[], gp2x_rect *gp2ximage, int bitdepth, int solid)
+int gp2x_loadPNG(char filename[], t_img_rect *gp2ximage, int bitdepth, int solid)
 {
 	int y;
 	int width, height;
