@@ -936,7 +936,7 @@ static const unsigned char fontdata8x8[] =
 	0x00,0x00,0x76,0xDC,0x00,0x00,0x00,0x00,0x10,0x28,0x10,0x54,0xAA,0x44,0x00,0x00,
 };
 
-static void wiz_text(unsigned char *screen, int x, int y, char *text, int color)
+void wiz_text(unsigned char *screen, int x, int y, char *text, int color)
 {
 	unsigned int i,l;
 	screen=screen+x+y*320;

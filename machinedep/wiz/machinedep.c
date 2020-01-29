@@ -187,6 +187,8 @@ unsigned long joyRead (int joystick)
 	if (pad & WIZ_L) joy |= MACH_B5;
 	if (pad & WIZ_R) joy |= MACH_B6;
 	
+	if (pad & WIZ_MENU) if (pad & WIZ_Y) joy |= MACH_SHOWFPS;
+	
 	return joy;
 }
 
@@ -261,4 +263,9 @@ void soundPause (int pause)
 	printf ("Pausa: %d\n", pause);
 	SDL_PauseAudio(pause);
 	*/
+}
+
+void printText (unsigned char *screen, int x, int y, char *text, int color)
+{
+	wiz_text (screen, x, y, text, color);
 }

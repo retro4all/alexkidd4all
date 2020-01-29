@@ -133,6 +133,7 @@ void updateVideo(void)
 			}
 
 			sprintf (sfps, "%lu FPS\0", frames_showed);
+			wiz_text (screen8, 32 , 200, sfps, 255);
 			//gp2x_printf(NULL, x, y, sfps);
 		}
 

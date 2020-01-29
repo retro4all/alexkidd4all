@@ -16,7 +16,7 @@ AR =  	$(GP2XPATH)ar
 AS =  	$(GP2XPATH)as
 
 CFLAGS    = -I/usr/local/wizdev/include
-DEFINES   = -DLSB_FIRST -DWIZ -DVARSPEED -DALIGN_DWORD -DUSE_ZLIB -DMMUHACK -DVERSION=\"v0.7a1\"
+DEFINES   = -DLSB_FIRST -DWIZ -DVARSPEED -DALIGN_DWORD -DUSE_ZLIB -DMMUHACK -DVERSION=\"v0.7a2\"
 INCLUDES  = -I. -I.. -I../cpu -I../sound -I../unzip -Iwiz/wiz_lib -Iwiz/asm -Iimg_headers
 LIBS	  = -L/usr/local/wizdev/lib -Wl,-rpath,/usr/local/wizdev/lib -lpthread -lm -lpng -lz
 
