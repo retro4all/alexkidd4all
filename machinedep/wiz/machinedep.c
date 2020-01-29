@@ -1,5 +1,6 @@
 #include "machinedep.h"
 #include "wiz_lib.h"
+#include "minimal_image.h"
 
 /*
 #include <SDL.h>
@@ -16,6 +17,7 @@ void machineInit (int bpp, int rate, int bits, int stereo)
 	wiz_init (bpp, rate, bits, stereo);
 	
 	screen8 = fb0_8bit;
+	back8 = fb1_8bit;
 }
 
 void machineDeInit (void)
@@ -26,6 +28,11 @@ void machineDeInit (void)
 void setMachineClock (int speed)
 {
 	wiz_set_clock(speed);
+}
+
+void setBackLayer (int enabled, int bpp)
+{
+	wiz_enable_back_layer(enabled, bpp);
 }
 
 void drawSprite(char* image, int srcX, int srcY, int dstX, int dstY, int width, int height, int imgw, int imgh )
@@ -136,6 +143,11 @@ void drawText (char * image, int x, int y, char * texto, int center)
 	}
 }
 
+void loadPNG (char filename[], t_img_rect * image, int bitdepth, int solid)
+{
+	gp2x_loadPNG(filename, image, bitdepth, solid);
+}
+
 void setPaletteColor (char r, char g, char b, unsigned char index)
 {
 	wiz_video_color8(index, r, g, b);
@@ -163,6 +175,7 @@ void videoFlip (int layer)
 	wiz_video_flip(layer);
 	
 	if (layer == 0) screen8 = fb0_8bit;
+	if (layer == 1) back8 = fb1_8bit;
 }
 
 unsigned long joyRead (int joystick)
@@ -187,7 +200,12 @@ unsigned long joyRead (int joystick)
 	if (pad & WIZ_L) joy |= MACH_B5;
 	if (pad & WIZ_R) joy |= MACH_B6;
 	
-	if (pad & WIZ_MENU) if (pad & WIZ_Y) joy |= MACH_SHOWFPS;
+	if (pad & WIZ_SELECT) if (pad & WIZ_Y) joy |= MACH_SHOWFPS;
+	
+	if (pad & WIZ_SELECT) if (pad & WIZ_R) joy |= MACH_LOAD;
+	if (pad & WIZ_SELECT) if (pad & WIZ_L) joy |= MACH_SAVE;
+	if (pad & WIZ_SELECT) if (pad & WIZ_VOLDOWN) joy |= MACH_SLOTD;
+	if (pad & WIZ_SELECT) if (pad & WIZ_VOLUP) joy |= MACH_SLOTU;
 	
 	return joy;
 }
@@ -253,7 +271,7 @@ void soundInit (int rate, int bits, int stereo, int Hz)
 
 void soundVolume (int left, int right)
 {
-	
+	wiz_sound_volume(left, right);
 }
 
 void soundPause (int pause)

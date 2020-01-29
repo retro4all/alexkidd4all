@@ -35,6 +35,10 @@
 
 #include "machinedep.h"
 
+#ifdef USEMARQUEES
+#include "minimal_image.h"
+#endif
+
 /* Options structure */
 extern t_option option;
 
@@ -622,16 +626,28 @@ char * select_marquee (char * back, char * font)
 	char path[256];
 	int nmarquees = 0;
 	int marqueex = 0, marqueey = 0, marqueeindex = 0;
-	gp2x_rect gp2ximage;
+	t_img_rect image;
 
+#ifdef GP2X
 	unsigned long black = gp2x_video_YUV_color(0, 0, 0);
+#elif WIZ
+	unsigned short * back16 = (unsigned short *) back8;
+#endif
 
 	for (i = 0; i < 320 * 240; i++)
 	{
+#ifdef GP2X		
 		gp2x_video_YUV[0].screen32[i] = black;
+#elif WIZ
+		back16[i] = 0;
+#endif
 	}
 
+#ifdef GP2X
 	gp2x_video_YUV_flip(0);
+#elif WIZ
+	videoFlip(1);
+#endif
 
 	pad = last_key = joyRead(0);
 
@@ -741,30 +757,52 @@ char * select_marquee (char * back, char * font)
 
 			sprintf(path, "marquees/%s", marquees[marqueey+marqueeindex]);
 
+#ifdef GP2X
 			gp2x_video_RGB_setcolorkey(0, 0, 0);
 			gp2x_video_RGB_setwindows(0x10, -1, -1, -1, 319, 239);
 			gp2x_video_YUV_setparts(0, -1, -1, -1, 319, 239);
 			gp2x_video_YUV_setscaling(0, 320, 240);
+#elif WIZ
+			setBackLayer(1, 16);
+#endif
 
-			MACH_B5oadPNG(path, &gp2ximage, 32, 1);
-			memset(gp2x_video_RGB[0].screen8, 1, 320 * 240);
-			gp2x_video_RGB_flip(0);
-			memcpy (gp2x_video_YUV[0].screen32, gp2ximage.data, 320 * 240 * 4);
+#ifdef GP2X
+			gp2x_loadPNG(path, &image, 32, 1);
+#elif WIZ
+			loadPNG(path, &image, 16, 1);
+#endif
+			memset(screen8, 1, 320 * 240);
+			videoFlip(0);
+#ifdef GP2X
+			memcpy (gp2x_video_YUV[0].screen32, image.data, 320 * 240 * 4);
 			gp2x_video_YUV_flip(0);
-
+#elif WIZ
+			memcpy (back8, image.data, 320*240*2);
+			videoFlip(1);
+#endif
 
 			while (pad & MACH_B4)
 			{
 				pad = joyRead(0);
 			}
 
+#ifdef WIZ
+			back16 = (unsigned short *) back8;
+#endif
 			for (i = 0; i < 320 * 240; i++)
 			{
+#ifdef GP2X		
 				gp2x_video_YUV[0].screen32[i] = black;
+#elif WIZ
+				back16[i] = 0;
+#endif
 			}
-
+			
+#ifdef GP2X
 			gp2x_video_YUV_flip(0);
-			//back = gp2ximage.data;
+#elif WIZ
+			videoFlip(1);
+#endif			
 		}
 
 		//    if (pad & GP2X_PUSH) if (pad & MACH_B3) delete_rom (marqueey+marqueeindex, marquees);
@@ -792,8 +830,8 @@ char * select_marquee (char * back, char * font)
 		//if (pause) pause--;
 		//    gp2x_video_waithsync();
 		//gp2x_video_waitvsync();
-		gp2x_video_RGB_flip(0);
-		gp2x_timer_delay(50);
+		videoFlip(0);
+		timerDelay(50);
 
 	}
 
@@ -1667,6 +1705,12 @@ block1:
 							case 250:
 								option.speed = 245;
 								break;
+							case 533:
+								option.speed = 500;
+								break;
+							case 550:
+								option.speed = 533;
+								break;
 #ifdef WIZ
 							default:
 								option.speed -= 25;
@@ -1761,6 +1805,12 @@ block1:
 							case 245:
 								option.speed = 250;
 								break;
+							case 500:
+								option.speed = 533;
+								break;
+							case 533:
+								option.speed = 550;
+								break;
 #ifdef GP2X
 							case 250:
 								option.speed = 100;
@@ -1820,7 +1870,7 @@ block1:
 						cheatsEnabled = selectCheats(back, font, crc);
 						break;
 					case 191: // Select Marquee
-						//strcpy(option.marquee, select_marquee (back, font));
+						strcpy(option.marquee, select_marquee (back, font));
 						break;
 				}
 
