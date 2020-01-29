@@ -1,0 +1,188 @@
+************************
+*      AlexKidd2X      *
+*         v0.5         *
+*     Xmas Edition     *
+************************
+
+Por: Israel López Fernández (Puck2099)
+Website: http://www.gp32wip.com
+Contacto y donaciones (Paypal): puck2099@gmail.com
+Basado en el trabajo de Charles Mac Donald.
+Splash screen obra de Neostalker.
+Agradecimientos especiales a Rlyeh por sus minimal libs y la ayuda prestada en la realización
+del emulador.
+
+¿Qué es AlexKidd2X?
+-----------------
+Es un emulador de SEGA Master System y Game Gear para la GP2X.
+
+¿Cómo lo instalo?
+-----------------
+Descomprime los archivos en cualquier lugar de la tarjeta SD. Copia las roms elegidas en el
+directorio que prefieras. Si las roms están en un directorio distinto al "roms" que acompaña al
+ejecutable, tendrás que editar el archivo alexkidd2x.cfg y poner la ruta absoluta apropiada (por
+ejemplo, si copias las roms en la carpeta roms/sms de la raiz, tendrás que editar el archivo y
+poner /mnt/sd/roms/sms. Estas roms pueden estar tanto descomprimidas (con extensión .sms o .gg)
+o comprimidas en un .zip (una rom por archivo).
+Si quieres añadir marcos personalizables, cópialos al directorio marquees que acompaña al
+ejecutable, pero recuerda usar solo archivos .png
+
+SI HAS USADO UNA VERSIÓN ANTERIOR DEL EMULADOR, BORRA EL CONTENIDO DEL DIRECTORIO DATA QUE
+ACOMPAÑA AL EJECUTABLE.
+
+¿Está disponible el código fuente?
+----------------------------------
+Sí, tal y como exige la licencia GPL, podéis descargar el código fuente en mi propia
+página web. Eso sí, aviso que los cambios realizados no están lo suficientemente
+"limpios" ni documentados. 
+Si queréis hacer algún cambio, por favor, os agradecería que contactárais primero
+conmigo para no trabajar dos personas en solucionar los mismos problemas :)
+
+¿Cómo podría ayudar?
+--------------------
+Hay muchas formas de aportar tu granito de arena a la scene, pero si quieres ayudarme a mi
+personalmente agradecería enormemente que me comunicaras los bugs que hayas encontrado, ideas
+útiles que se te ocurran o cualquier comentario sobre mi trabajo :)
+Por otro lado, si quieres ayudarme a mantener el servidor desde donde bajar mis trabajos o mi
+página web, puedes hacer cualquier donación via Paypal (puck2099@gmail.com) o transferencia
+bancaria (pídeme la cuenta) y será gustosamente recibida. Ah, también me interesa material retro
+como juegos de Master System, así que si tienes alguno que te estorbe en casa, agradecería que me
+lo mandaras para conseguir una emulación más fina.
+
+Controles:
+----------
+Los controles del selector de roms son:
+Arriba/Abajo -> Mueve el cursor una línea.
+L/R/Izquierda/Derecha -> Mueve el cursor una página.
+Izquierda/Derecha -> Cambia opción del menú.
+B -> Confirma.
+Y -> Previsualiza marco seleccionado (mantenlo presionado).
+CLICK+X -> Borra rom seleccionada.
+CLICK+Y -> Guarda la configuración de rom actual como defecto para toda rom sin configuración/
+	   Salva el directorio actual como directorio de roms por defecto.
+START -> Vuelve atrás/sale del emulador.
+SELECT -> Confirma el menú/Escanea el directorio seleccionado para identificar ROMs.
+
+
+Los controles del juego pueden ser remapeados desde el menú, pero por defecto son los siguientes:
+Joystick -> Cruceta.
+A -> Botón 1.
+B -> Botón 2.
+START -> Pausa.
+CLICK+VOL+ -> Incremente el slot actual (hasta un máximo de 10).
+CLICK+VOL- -> Decrementa el slot actual.
+CLICK+L -> Salva partida en el slot actual.
+CLICK+R -> Carga partida del slot actual.
+CLICK+X -> Muestra/Oculta indicador de batería.
+CLICK+Y -> Muestra/Oculta FPS.
+VOL+ -> Aumenta volumen.
+VOL- -> Disminiye volumen.
+L+R -> Vuelve al menú saliendo del juego.
+
+Cambios en AlexKidd2X:
+----------------------
+v0.5:
+- Reescrito gran parte del código del emulador para conseguir una emulación más precisa de la 
+  máquina.
+- Incluido el MMU Hack de Squidge para ganar algo de velocidad.
+- Implementada base de datos basada en CRC. Cada vez que se carga un juego, se comprueba su CRC y
+  se compara con una base de datos interna para obtener su nombre y algunos parámetros.
+- Se ha cambiado la estructura de directorios. Ahora las partidas salvadas van en "save" en lugar
+  de en el directorio de las roms y los archivos de configuración tienen extensión .cfg. Gracias al
+  CRC indicado anteriormente, ahora se salvan estos datos con el nombre adecuado, de forma que si
+  tenemos una misma rom con varios nombres distintos, el programa internamente las tomará como la
+  misma, permitiendo que las partidas guardadas y configuraciones se puedan usar en todas ellas
+  automáticamente.
+- Añadidos 10 slots para salvar/cargar partidas en lugar de 1. Se puede cambiar entre slots con
+  CLICK+VOL- o CLICK+VOL+.
+- Añadidos mensajes en pantalla para mostrar información en determinados momentos (información
+  cuando cargas/salvas partida, cambio de slot, anotaciones sobre ROMs...).
+- Posibilidad de overclockear o downclockear la velocidad del micro Z80 desde el menú de opciones.
+  Puede ser útil para algunos juegos que no iban a 100% en la propia Master System original.
+- Cargado/salvado de la ram interna de los cartuchos ahora funciona correctamente.
+- Añadidas voces digitalizadas y funcionando perfectamente (ver Street Fighter 2, Gauntlet, Sonic
+  de Game Gear...).
+- Chip FM funcional y elegible entre dos emulaciones diferentes. Se comprueba por CRC que solo se
+  active en los juegos que llevan soporte para ello (Wonderboy 3...).
+- Posibilidad de elegir samplerate entre 44100 y 22050. Prácticamente suenan igual, así que por
+  defecto se selecciona 22050 que es más rápido.
+- Paletas de colores más brillantes, ahora se ve mejor :)
+- Optimizada cache de tiles.
+- Cambio de la barra vertical de la izquierda que aparece en muchos juegos con scroll vertical del
+  color de fondo a color transparente.
+- Eliminada la opción de elegir frameskip y sustituida por un autoframeskip.
+- GUI completamente rehecha en 8 bits de color. Ahora se evitan cambios de video entre la GUI y la
+  emulación y va más fina.
+- Ahora se guarda la velocidad de CPU y configuración del LCD al entrar al emulador y se restaura al
+  salir, evitando cambios inadecuados cuando se salía del emulador.
+- Corregido en parte los parpadeos en el selector de ROMs.
+- Muchos cambios menores y ajustes en la GUI (avanzar páginas también con Izquierda y Derecha,
+  Recordar posición del cursor en la lista de roms...).
+- Escaneo de directorios en busca de CRCs desde el menú de elección de roms pulsando SELECT. Esto
+  guarda un archivo con la información de forma que se cargue automáticamente y sin pausa cada vez
+  que se pase por el directorio.
+- Añadido modo compatibilidad para algunas roms de Game Gear que no funcionaban correctamente
+  (Castle of Illusion, Prince of Persia, Out Run Europa...). Se muestran como si fueran de Master
+  System.
+- Añadida posibilidad de elegir mostrar las roms de Game Gear con la resolución de Master System.
+- Añadido soporte para joysticks USB y configuración de estos. Ahora es posible jugar a dobles
+  usando uno o dos de estos joysticks junto a una dockstation o similar.
+- Cambio modo de elección de la region. Ahora es posible elegir la región (Japón o bien USA o
+  Europa) y el modo de video (PAL o NTSC).
+- Añadido mucho mejor soporte para el modo PAL y sus 50 hz.
+- Solucionados bugs menores.
+
+v0.4:
+- Control del selector de roms mejorado, ahora responde mejor a los eventos de botones.
+- Corregido bug con rutas absolutas.
+- Añadida navegación por directorios para seleccionar las roms de cualquier lugar del árbol de
+  directorios (NAND, SD, etc.). Se puede seleccionar el directorio actual como la ubicación por
+  defecto de las roms pulsando CLICK+Y.
+- Corregido bug que permitía seleccionar "líneas vacías" como si fueran roms.
+- Velocidad del selector de roms constante (100 Mhz) para evitar parpadeos al volver con distintas
+  frecuencias.
+- Añadida la posibilidad de seleccionar marcos personalizables (solo admite imágenes en png) para
+  jugar a la resolución original. Si os metéis en el menú de selección y no queréis elegir ninguna,
+  seleccionad !none.png
+- Aumento ligero de la velocidad (hasta un 10% en algunos casos).
+- Añadido indicador del nivel de batería durante el juego y aviso visual de batería baja mediante
+  led rojo (se puede activar y desactivar el icono de la batería pulsando CLICK+X, excepto cuando
+  la carga está a punto de agotarse (cuando parpadea el indicador) que no se puede ocultar).
+- Corregido aspect ratio de Game Gear en modo a pantalla completa.
+- Solucionados bugs menores.
+
+v0.3:
+- Cambio de color de 16 a 8 bits con una ganancia estimada de hasta un 60% de velocidad con
+  respecto a la versión anterior.
+- Añadidas velocidades menores al selector de roms para ajustar la velocidad y ahorrar baterías.
+- Añadida la posibilidad de configurar la ruta donde buscar la roms por defecto (ver instalación).
+- Añadidas las direcciones al remapeo de controles, de modo que puedas asignar un botón a una
+  dirección del pad (útil en juegos como Bank Panic).
+- Mejorado el control en el remapeo de botones, haciéndolo más preciso que antes.
+- Añadida la posibilidad de cambiar la configuración por defecto de todas las roms (pulsa Click+Y
+  en la pantalla de configuración para aplicar ésta a todas las roms que no hayan sido
+  ejecutadas previamente).
+- Añadido selector de region para limitar los FPS a 60 (NTSC) o 50 (PAL).
+- Añadido soporte para juegos con SRAM de modo que salve la partida en el propio juego.
+- Añadidos los caracteres que faltaban a la fuente del selector de roms (!?[]) para un mejor
+  aspecto visual.
+- Solucionado bug que no cerraba el dispositivo de sonido al salir.
+- Solucionados bugs menores.
+
+v0.2:
+- Código reescrito totalmente de SDL a Rlyeh Minilib con una ganancia estimada de un 15% de
+  velocidad (Alex Kidd in Miracle World va casi a 100% a 166 Mhz).
+- Mejora en el sonido, ahora va a 44100 Hz y suena más "limpio".
+- Incluído control de volumen durante el juego.
+- Incluído visor de FPS opcional.
+- Selector de ROMs más rápido a petición popular.
+- Añadida configuración personalizada para cada juego (se guarda automática al lanzarlo).
+- Guardada posición del cursor en el selector de roms para no volver a empezar desde el principio
+  al seleccionar una nueva ROM.
+- Añadida combinación para borrar roms desde el propio selector.
+- Solucionados bugs menores.
+
+
+v0.1:
+-------
+- Primera versión.
