@@ -78,4 +78,6 @@ void soundVolume (int left, int right);
 
 void soundPause (int pause);
 
+void printText (unsigned char *screen, int x, int y, char *text, int color);
+
 #endif /* __MACHINEDEP_H__ */

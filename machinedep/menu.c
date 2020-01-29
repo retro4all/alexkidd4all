@@ -1627,7 +1627,9 @@ block1:
 						switch (option.speed)
 						{
 							case 100:
+#ifdef GP2X							
 								option.speed = 250;
+#endif								
 								break;
 							case 110:
 								option.speed = 100;
@@ -1665,6 +1667,10 @@ block1:
 							case 250:
 								option.speed = 245;
 								break;
+#ifdef WIZ
+							default:
+								option.speed -= 25;
+#endif
 						}
 
 						break;
@@ -1755,9 +1761,15 @@ block1:
 							case 245:
 								option.speed = 250;
 								break;
+#ifdef GP2X
 							case 250:
 								option.speed = 100;
 								break;
+#endif
+#ifdef WIZ
+							 default:
+								option.speed += 25;
+#endif
 						}
 
 						break;

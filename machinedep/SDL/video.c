@@ -72,6 +72,7 @@ void videoInit (void)
 	{
 		bitmap.yofs = (bitmap.rendermode == RENDER_GG) ? -24 : 0;
 		bitmap.xofs = (bitmap.rendermode == RENDER_GG) ? 16 : 0;
+		bitmap.fullscreen = 1;
 
 		//if (bitmap.rendermode == RENDER_GG) gp2x_video_RGB_setscaling(192, 144);
 		//else gp2x_video_RGB_setscaling(256, 192);
@@ -80,6 +81,7 @@ void videoInit (void)
 	{
 		bitmap.yofs = (bitmap.rendermode == RENDER_GG) ? 24 : 24;
 		bitmap.xofs = (bitmap.rendermode == RENDER_GG) ? 80 : 32;
+		bitmap.fullscreen = 0;
 		//gp2x_video_RGB_setscaling(320, 240);
 	}
 }

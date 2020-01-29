@@ -101,6 +101,8 @@ extern void wiz_gamelist_text_out_fmt(int x, int y, char* fmt, ...);
 
 extern void wiz_video_wait_vsync(void);
 
+extern void wiz_text (unsigned char *screen, int x, int y, char *text, int color);
+
 #ifdef MMUHACK
 #include "warm.h"
 #endif

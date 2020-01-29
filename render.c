@@ -733,21 +733,38 @@ void remap_8(int line)
 	
 	if (bitmap.fullscreen)
 	{
-		unsigned char *p = &bitmap.data[((line + line / 4) * bitmap.pitch)];
-		//unsigned char *p = &bitmap.data[((line+yofs) * bitmap.pitch)];
-	  
-		for (i = 0; i < BMP_WIDTH; i++)
+		if (bitmap.rendermode == RENDER_GG)
 		{
-			*p++ = internal_buffer[ofs + i];
-
-			if (i % 4 == 0)
+			if (line < 36 || line > 156) return;
+			
+			unsigned char *p = &bitmap.data[(line - 36) * 2 * bitmap.pitch];
+			unsigned char *p2 = p;
+			
+			for (i = 0; i < BMP_WIDTH; i++)
+			{
 				*p++ = internal_buffer[ofs + i];
+				*p++ = internal_buffer[ofs + i];
+			}			
+			memcpy (p, p2, 320);						
 		}
+		else
+		{			
+			unsigned char *p = &bitmap.data[((line + line / 4) * bitmap.pitch)];
+			//unsigned char *p = &bitmap.data[((line+yofs) * bitmap.pitch)];
+		  
+			for (i = 0; i < BMP_WIDTH; i++)
+			{
+				*p++ = internal_buffer[ofs + i];
 
-		if ((line + 1) % 4 == 0)
-		{
-			unsigned char * p2 = &bitmap.data[((line + line / 4) * bitmap.pitch)];
-			memcpy (p, p2, 320);
+				if (i % 4 == 0)
+					*p++ = internal_buffer[ofs + i];
+			}
+
+			if ((line + 1) % 4 == 0)
+			{
+				unsigned char * p2 = &bitmap.data[((line + line / 4) * bitmap.pitch)];
+				memcpy (p, p2, 320);
+			}
 		}
 	}
 	else
